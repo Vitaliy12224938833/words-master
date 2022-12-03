@@ -1,0 +1,42 @@
+.conteiner {
+  text-align:center;
+  font-size: 50px;
+  color: white;
+  width: 400px;
+  background-color: black;
+}
+.display {
+  text-align: right;
+  height: 50px;
+}
+.buttons {
+  display: flex;
+  align-content: stretch;
+  justify-content: space-between;
+}
+.button {
+  font-size: 40px;
+  height: 100px;
+  width: 24.5%;
+  background-color: #d8d9db;
+  color: black;
+  border: none;
+  margin-bottom: 0.5%;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: azure;
+}
+.button:hover:last-child {
+  background-color: tan;
+}
+.button:last-child {
+  color: aliceblue;
+  background-color: orange;
+}
+.delete {
+  width: 49.7%;
+}
+.zero {
+  width: 74.8%;
+}
