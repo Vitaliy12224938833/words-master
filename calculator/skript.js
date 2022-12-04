@@ -1,86 +1,86 @@
 const button = document.querySelector(".operations");
 const dispaly = document.querySelector(".display");
-let secondArrNum = [];
-let firstArrNum = [];
+let topArrNum = [];
+let tailArrNum = [];
 let operation = "";
 
 button.addEventListener("click", function (event) {
-  const target = event.target.innerText;
-  const num = parseInt(target);
+  const value = event.target.innerText;
+  const num = parseInt(value);
 
   if (num >= 0) {
-    secondArrNum.push(num);
-    dispaly.innerText = secondArrNum.join("");
+    topArrNum.push(num);
+    dispaly.innerText = topArrNum.join("");
     return;
   }
-  if (target === "←" || target === "C") {
-    remove(target);
+  if (value === "←" || value === "C") {
+    remove(value);
   }
-  if (target === "÷" || target === "+" || target === "-" || target === "×") {
-    if (firstArrNum.length) {
+  if (value === "÷" || value === "+" || value === "-" || value === "×") {
+    if (tailArrNum.length) {
       calculate(operation);
     }
-    firstArrNum = [...secondArrNum];
-    secondArrNum = [];
-    operation = target;
+    tailArrNum = [...topArrNum];
+    topArrNum = [];
+    operation = value;
     dispaly.innerText = "0";
     return;
   }
 
-  if (target === "=" && firstArrNum.length) {
+  if (value === "=" && tailArrNum.length) {
     calculate(operation);
-    firstArrNum = [];
+    tailArrNum = [];
     return;
   }
 });
 
-function remove(target) {
-  if (secondArrNum.length === 1) {
+function remove(value) {
+  if (topArrNum.length === 1) {
     dispaly.innerText = "0";
-    firstArrNum = [];
+    tailArrNum = [];
     return;
   }
-  if (target === "C") {
+  if (value === "C") {
     dispaly.innerText = "0";
-    secondArrNum = [];
+    topArrNum = [];
     return;
   }
   if (dispaly.innerText !== "0") {
-    secondArrNum.pop();
-    dispaly.innerText = secondArrNum.join("");
+    topArrNum.pop();
+    dispaly.innerText = topArrNum.join("");
     return;
   }
 }
 
 function calculate(operation) {
-  if (!secondArrNum.length) {
-    secondArrNum = firstArrNum;
+  if (!topArrNum.length) {
+    secondArrNum = tailArrNum;
     return;
   }
-  const firstNum = parseInt(firstArrNum.join(""));
-  const secondNum = parseInt(secondArrNum.join(""));
+  const tailNum = parseInt(tailArrNum.join(""));
+  const topNum = parseInt(topArrNum.join(""));
 
   if (operation === "+") {
-    const result = firstNum + secondNum;
-    secondArrNum = result.toString().split("");
+    const result = tailNum + topNum;
+    topArrNum = result.toString().split("");
     dispaly.innerText = result;
     return;
   }
   if (operation === "÷") {
-    const result = firstNum / secondNum;
-    secondArrNum = result.toString().split("");
+    const result = tailNum / topNum;
+    topArrNum = result.toString().split("");
     dispaly.innerText = result;
     return;
   }
   if (operation === "-") {
-    const result = firstNum - secondNum;
-    secondArrNum = result.toString().split("");
+    const result = tailNum - topNum;
+    topArrNum = result.toString().split("");
     dispaly.innerText = result;
     return;
   }
   if (operation === "×") {
-    const result = firstNum * secondNum;
-    secondArrNum = result.toString().split("");
+    const result = tailNum * topNum;
+    topArrNum = result.toString().split("");
     dispaly.innerText = result;
     return;
   }
