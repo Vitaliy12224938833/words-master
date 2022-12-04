@@ -13,9 +13,11 @@ button.addEventListener("click", function (event) {
     dispaly.innerText = topArrNum.join("");
     return;
   }
+
   if (value === "←" || value === "C") {
     remove(value);
   }
+
   if (value === "÷" || value === "+" || value === "-" || value === "×") {
     if (tailArrNum.length) {
       calculate(operation);
@@ -35,12 +37,7 @@ button.addEventListener("click", function (event) {
 });
 
 function remove(value) {
-  if (topArrNum.length === 1) {
-    dispaly.innerText = "0";
-    tailArrNum = [];
-    return;
-  }
-  if (value === "C") {
+  if (topArrNum.length === 1 || value === "C") {
     dispaly.innerText = "0";
     topArrNum = [];
     return;
@@ -54,34 +51,19 @@ function remove(value) {
 
 function calculate(operation) {
   if (!topArrNum.length) {
-    secondArrNum = tailArrNum;
+    topArrNum = tailArrNum;
     return;
   }
   const tailNum = parseInt(tailArrNum.join(""));
   const topNum = parseInt(topArrNum.join(""));
+  let result = 0;
 
-  if (operation === "+") {
-    const result = tailNum + topNum;
-    topArrNum = result.toString().split("");
-    dispaly.innerText = result;
-    return;
-  }
-  if (operation === "÷") {
-    const result = tailNum / topNum;
-    topArrNum = result.toString().split("");
-    dispaly.innerText = result;
-    return;
-  }
-  if (operation === "-") {
-    const result = tailNum - topNum;
-    topArrNum = result.toString().split("");
-    dispaly.innerText = result;
-    return;
-  }
-  if (operation === "×") {
-    const result = tailNum * topNum;
-    topArrNum = result.toString().split("");
-    dispaly.innerText = result;
-    return;
-  }
+  if (operation === "+") result = tailNum + topNum;
+  if (operation === "÷") result = tailNum / topNum;
+  if (operation === "-") result = tailNum - topNum;
+  if (operation === "×") result = tailNum * topNum;
+
+  topArrNum = result.toString().split("");
+  dispaly.innerText = result;
+  return;
 }
