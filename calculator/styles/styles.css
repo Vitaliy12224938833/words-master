@@ -37,9 +37,6 @@
   color: aliceblue;
   background-color: orange;
 }
-.delete {
+.delete, .zero {
   width: 49.7%;
-}
-.zero {
-  width: 74.8%;
 }
