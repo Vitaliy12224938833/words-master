@@ -2,8 +2,8 @@ const button = document.querySelector(".operations");
 const dispaly = document.querySelector(".display");
 const body = document.querySelector(".body");
 
-let topArrNum = "";
-let tailArrNum = "";
+let head = "";
+let tail = "";
 let operation = "";
 
 button.addEventListener("click", function (event) {
@@ -20,9 +20,9 @@ button.addEventListener("click", function (event) {
     return;
   }
 
-  if (value === "=" && tailArrNum.length) {
+  if (value === "=" && tail.length) {
     calculate(operation);
-    tailArrNum = "";
+    tail = "";
     return;
   }
 });
@@ -41,68 +41,67 @@ body.addEventListener("keydown", function (event) {
     return;
   }
 
-  if (value === "=" || (value === "Enter" && tailArrNum.length)) {
+  if (value === "=" || (value === "Enter" && tail.length)) {
     calculate(operation);
-    tailArrNum = "";
+    tail = "";
     return;
   }
 });
 
 function add(value) {
   if ((value >= "0" && value <= "9") || value === ".") {
-    console.log(topArrNum.indexOf("."));
-    if (topArrNum.indexOf(".") !== -1 && topArrNum.length && value === ".") {
+    if (head.indexOf(".") !== -1 && head.length && value === ".") {
       return;
     }
-    topArrNum += value;
-    dispaly.innerText = topArrNum;
+    head += value;
+    dispaly.innerText = head;
     return;
   }
 }
 
 function swap(value) {
-  if (tailArrNum.length) {
+  if (tail.length) {
     calculate(operation);
   }
-  tailArrNum = topArrNum;
-  topArrNum = "";
+  tail = head;
+  head = "";
   operation = value;
   dispaly.innerText = "0";
   return;
 }
 
 function remove(value) {
-  if (topArrNum.length === 1 || value === "C" || value === "Delete") {
+  if (head.length === 1 || value === "C" || value === "Delete") {
     dispaly.innerText = "0";
-    topArrNum = "";
+    head = "";
     return;
   }
   if (dispaly.innerText !== "0") {
-    topArrNum = topArrNum.substring(0, topArrNum.length - 1);
-    dispaly.innerText = topArrNum;
+    head = head.substring(0, head.length - 1);
+    dispaly.innerText = head;
     return;
   }
 }
 
 function calculate(operation, precision = 100000000) {
-  if (!topArrNum.length) {
-    topArrNum = tailArrNum;
+  if (!head.length) {
+    head = tail;
     return;
   }
-  const tailNum = Number(tailArrNum);
-  const topNum = Number(topArrNum);
+  const tailNum = Number(tail);
+  const headNum = Number(head);
   let result = 0;
   if (operation === "+")
-    result = (tailNum * precision + topNum * precision) / precision;
+    result = (tailNum * precision + headNum * precision) / precision;
   if (operation === "-")
-    result = (tailNum * precision - topNum * precision) / precision;
+    result = (tailNum * precision - headNum * precision) / precision;
   if (operation === "÷" || operation === "/")
-    result = (tailNum * precision) / (topNum * precision);
+    result = (tailNum * precision) / (headNum * precision);
   if (operation === "×" || operation === "*")
     result =
-      (tailNum * precision * (topNum * precision)) / (precision * precision);
+      (tailNum * precision * headNum * precision) / (precision * precision);
 
-  topArrNum = result.toString();
+  head = result.toString();
   dispaly.innerText = result;
   return;
 }
