@@ -49,8 +49,11 @@ body.addEventListener("keydown", function (event) {
 });
 
 function add(value) {
-  if ((value >= "0" && value <= "9") || value === ".") {
-    if (head.indexOf(".") !== -1 && head.length && value === ".") {
+  if ((value >= "0" && value <= "9") || value === "." || value === ",") {
+    if (
+      (head.indexOf(".") !== -1 && head.length && value === ".") ||
+      (head.indexOf(",") !== -1 && head.length && value === ",")
+    ) {
       return;
     }
     head += value;
