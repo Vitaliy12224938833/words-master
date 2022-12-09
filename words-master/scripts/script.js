@@ -15,7 +15,7 @@ let valid = false;
 
 if (!secretWord.length) getSekretWord();
 
-async function addLeter(event) {
+async function addLetter(event) {
   const letter = event.key;
   if (
     isLetter(letter) &&
@@ -53,7 +53,7 @@ async function getSekretWord() {
   const promis = await fetch(WORDS_URL);
   const wordObj = await promis.json();
   secretWord = wordObj.word;
-  console.log(secretWord)
+  console.log(secretWord);
 }
 
 function paintingLetters() {
@@ -110,4 +110,4 @@ restartBtn.addEventListener("click", () => {
   }
 });
 
-body.addEventListener("keydown", addLeter);
+body.addEventListener("keydown", addLetter);
