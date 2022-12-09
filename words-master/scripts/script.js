@@ -2,7 +2,7 @@ const letters = document.querySelectorAll(".scoreboard-letter");
 const body = document.querySelector(".body");
 const restartBtn = document.querySelector(".restart-btn");
 
-const wordValidator = "https://words.dev-apis.com/validate-word";
+const WORDS_VALIDATOR_URL = "https://words.dev-apis.com/validate-word";
 const WORDS_URL = "https://words.dev-apis.com/word-of-the-day?random=1";
 
 const wordSize = 5;
@@ -38,7 +38,7 @@ async function addLeter(event) {
 }
 
 async function isValidWord(currWord, letter) {
-  const promis = await fetch(wordValidator, {
+  const promis = await fetch(WORDS_VALIDATOR_URL, {
     method: "POST",
     body: JSON.stringify({ word: currWord }),
   });
@@ -53,10 +53,12 @@ async function getSekretWord() {
   const promis = await fetch(WORDS_URL);
   const wordObj = await promis.json();
   secretWord = wordObj.word;
+  console.log(secretWord)
 }
 
 function paintingLetters() {
   const currSize = currIdx + wordSize;
+
   if (!valid) {
     for (let i = currIdx; i < currSize; i++) {
       letters[i].style.borderColor = "#FF0000";
