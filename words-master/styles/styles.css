@@ -12,7 +12,7 @@ body {
   font-size: 30px;
   text-align: center;
 }
-.scoreboard{
+.scoreboard {
   max-width: 295px;
   width: 100%;
   margin: 10px auto;
@@ -21,7 +21,7 @@ body {
   row-gap: 10px;
   column-gap: 5px;
 }
-.scoreboard-letter{
+.scoreboard-letter {
   height: 45px;
   width: 45px;
   font-size: 30px;
@@ -34,14 +34,14 @@ body {
   justify-content: center;
 }
 
-.restart-btn{
+.restart-btn {
   width: 150px;
   margin-top: 50px;
   text-transform: uppercase;
   border: 3px solid #333;
   border-radius: 4px;
   font-weight: bold;
-  display:flex ;
+  display: flex;
   margin-right: auto;
   margin-left: auto;
   align-items: center;
