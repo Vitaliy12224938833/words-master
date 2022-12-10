@@ -5,7 +5,7 @@ const restartBtn = document.querySelector(".restart-btn");
 const WORDS_VALIDATOR_URL = "https://words.dev-apis.com/validate-word";
 const WORDS_URL = "https://words.dev-apis.com/word-of-the-day?random=1";
 
-const wordSize = 5;
+const WORD_SIZE = 5;
 
 let currWord = "";
 let secretWord = "";
@@ -20,7 +20,7 @@ async function addLeter(event) {
   if (
     isLetter(letter) &&
     letter !== "Backspace" &&
-    currWord.length < wordSize
+    currWord.length < WORD_SIZE
   ) {
     currWord += letter;
     letters[index].innerText = letter;
@@ -31,7 +31,7 @@ async function addLeter(event) {
     letters[index].innerText = "";
     currWord = currWord.substring(0, currWord.length - 1);
   }
-  if (currWord.length === wordSize) {
+  if (currWord.length === WORD_SIZE && letter === "Enter") {
     isValidWord(currWord, letter);
     valid = false;
   }
@@ -44,20 +44,18 @@ async function isValidWord(currWord, letter) {
   });
   const validObj = await promis.json();
   valid = validObj.validWord;
-  if (letter === "Enter") {
-    paintingLetters();
-  }
+  paintingLetters();
 }
 
 async function getSekretWord() {
   const promis = await fetch(WORDS_URL);
   const wordObj = await promis.json();
   secretWord = wordObj.word;
-  console.log(secretWord)
+  console.log(secretWord);
 }
 
 function paintingLetters() {
-  const currSize = currIdx + wordSize;
+  const currSize = currIdx + WORD_SIZE;
 
   if (!valid) {
     for (let i = currIdx; i < currSize; i++) {
