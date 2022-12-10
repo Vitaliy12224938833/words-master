@@ -5,109 +5,103 @@ const restartBtn = document.querySelector(".restart-btn");
 const WORDS_VALIDATOR_URL = "https://words.dev-apis.com/validate-word";
 const WORDS_URL = "https://words.dev-apis.com/word-of-the-day?random=1";
 
-const wordSize = 5;
+const WORD_SIZE = 5;
 
-let currWord = "";
-let secretWord = "";
-let index = 0;
-let currIdx = 0;
-let valid = false;
+const obj = {
+  currWord: "",
+  secretWord: "",
+  index: 0,
+  currIdx: 0,
+  valid: false,
 
-if (!secretWord.length) getSekretWord();
+  addLetter(event) {
+    const letter = event.key;
 
-async function addLetter(event) {
-  const letter = event.key;
-  if (
-    isLetter(letter) &&
-    letter !== "Backspace" &&
-    currWord.length < wordSize
-  ) {
-    currWord += letter;
-    letters[index].innerText = letter;
-    index++;
-  }
-  if (letter === "Backspace" && index > currIdx) {
-    index--;
-    letters[index].innerText = "";
-    currWord = currWord.substring(0, currWord.length - 1);
-  }
-  if (currWord.length === wordSize) {
-    isValidWord(currWord, letter);
-    valid = false;
-  }
-}
-
-async function isValidWord(currWord, letter) {
-  const promis = await fetch(WORDS_VALIDATOR_URL, {
-    method: "POST",
-    body: JSON.stringify({ word: currWord }),
-  });
-  const validObj = await promis.json();
-  valid = validObj.validWord;
-  if (letter === "Enter") {
-    paintingLetters();
-  }
-}
-
-async function getSekretWord() {
-  const promis = await fetch(WORDS_URL);
-  const wordObj = await promis.json();
-  secretWord = wordObj.word;
-  console.log(secretWord);
-}
-
-function paintingLetters() {
-  const currSize = currIdx + wordSize;
-
-  if (!valid) {
-    for (let i = currIdx; i < currSize; i++) {
-      letters[i].style.borderColor = "#FF0000";
-      letters[i].style.transition = "0.5s";
+    if (!obj.secretWord.length) obj.getSekretWord();
+    if (obj.isLetter(letter) && obj.currWord.length < WORD_SIZE) {
+      obj.currWord += letter;
+      letters[obj.index].innerText = letter;
+      obj.index++;
     }
-    setTimeout(() => {
-      for (let j = currIdx; j < currSize; j++) {
-        letters[j].style.borderColor = "#333";
-      }
-    }, 500);
-  } else {
-    let idx = 0;
-    for (let i = currIdx; i < currSize; i++) {
-      const letterStyle = letters[i].style;
-      const currLetter = currWord[idx];
-      const secretLetter = secretWord[idx];
-      letterStyle.transition = "";
-      if (currLetter === secretLetter) {
-        letterStyle.backgroundColor = "green";
-      } else if (secretWord.indexOf(currLetter) !== -1) {
-        letterStyle.backgroundColor = "#ffff00";
-      } else {
-        letterStyle.backgroundColor = "#C0C0C0";
-      }
-      idx++;
+    if (letter === "Backspace" && obj.index > obj.currIdx) {
+      obj.index--;
+      letters[obj.index].innerText = "";
+      obj.currWord = obj.currWord.substring(0, obj.currWord.length - 1);
     }
-    if (currWord === secretWord) console.log("You winner!!");
+    if (obj.currWord.length === WORD_SIZE && letter === "Enter") {
+      obj.isValidWord(obj.currWord);
+      obj.valid = false;
+    }
+  },
+
+  isValidWord: async function (currWord) {
+    const promis = await fetch(WORDS_VALIDATOR_URL, {
+      method: "POST",
+      body: JSON.stringify({ word: currWord }),
+    });
+    const validObj = await promis.json();
+    obj.valid = validObj.validWord;
+    obj.paintingLetters();
+  },
+
+  getSekretWord: async function () {
+    const promis = await fetch(WORDS_URL);
+    const wordObj = await promis.json();
+    obj.secretWord = wordObj.word;
+  },
+
+  paintingLetters() {
+    const currSize = obj.currIdx + WORD_SIZE;
+    if (!obj.valid) {
+      for (let i = obj.currIdx; i < currSize; i++) {
+        letters[i].style.borderColor = "#FF0000";
+        letters[i].style.transition = "0.5s";
+      }
+      setTimeout(() => {
+        for (let j = obj.currIdx; j < currSize; j++) {
+          letters[j].style.borderColor = "#333";
+        }
+      }, 500);
+    } else {
+      let idx = 0;
+      for (let i = obj.currIdx; i < currSize; i++) {
+        const letterStyle = letters[i].style;
+        const currLetter = obj.currWord[idx];
+        const secretLetter = obj.secretWord[idx];
+        letterStyle.transition = "";
+        if (currLetter === secretLetter) {
+          letterStyle.backgroundColor = "green";
+        } else if (obj.secretWord.indexOf(currLetter) !== -1) {
+          letterStyle.backgroundColor = "#ffff00";
+        } else {
+          letterStyle.backgroundColor = "#C0C0C0";
+        }
+        idx++;
+      }
+      if (obj.currWord === obj.secretWord) console.log("You winner!!");
+      obj.currWord = "";
+      obj.currIdx = obj.index;
+    }
+  },
+
+  isLetter(letter) {
+    if ((letter >= "a" && letter <= "z") || (letter >= "A" && letter <= "Z")) {
+      if (letter.length === 1) return true;
+    }
+    return false;
+  },
+  restart() {
+    obj.getSekretWord();
     currWord = "";
-    currIdx = index;
-  }
-}
+    index = 0;
+    currIdx = 0;
+    valid = false;
+    for (const letter of letters) {
+      letter.innerText = "";
+      letter.style.backgroundColor = "";
+    }
+  },
+};
 
-function isLetter(letter) {
-  if ((letter >= "a" && letter <= "z") || (letter >= "A" && letter <= "Z")) {
-    if (letter.length === 1 || letter === "Backspace") return true;
-  }
-  return false;
-}
-
-restartBtn.addEventListener("click", () => {
-  getSekretWord();
-  currWord = "";
-  index = 0;
-  currIdx = 0;
-  valid = false;
-  for (const letter of letters) {
-    letter.innerText = "";
-    letter.style.backgroundColor = "";
-  }
-});
-
-body.addEventListener("keydown", addLetter);
+restartBtn.addEventListener("click", obj.restart);
+body.addEventListener("keydown", obj.addLetter);
