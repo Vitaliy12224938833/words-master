@@ -28,8 +28,8 @@ const obj = {
       obj.currWord = obj.currWord.substring(0, obj.currWord.length - 1);
     }
     if (obj.currWord.length === WORD_SIZE && letter === "Enter") {
-      obj.isValidWord(obj.currWord);
       obj.valid = false;
+      obj.isValidWord(obj.currWord);
     }
   },
 
@@ -38,15 +38,15 @@ const obj = {
       method: "POST",
       body: JSON.stringify({ word: currWord }),
     });
-    const validObj = await promis.json();
-    this.valid = validObj.validWord;
+    const { validWord } = await promis.json();
+    this.valid = validWord;
     this.paintingLetters();
   },
 
   getSekretWord: async function () {
     const promis = await fetch(WORDS_URL);
-    const wordObj = await promis.json();
-    this.secretWord = wordObj.word;
+    const { word } = await promis.json();
+    this.secretWord = word;
     console.log(this.secretWord);
   },
 
@@ -55,17 +55,18 @@ const obj = {
 
     const currSize = currIdx + WORD_SIZE;
 
-    if (!valid) {
+    if (valid === false) {
       for (let i = currIdx; i < currSize; i++) {
         letters[i].style.borderColor = "#FF0000";
-        letters[i].style.transition = "0.5s";
+        letters[i].style.transition = "0.3s";
       }
       setTimeout(() => {
         for (let j = currIdx; j < currSize; j++) {
           letters[j].style.borderColor = "#333";
         }
       }, 500);
-    } else {
+    } else if (currWord.length === WORD_SIZE && valid === true) {
+      console.log(currWord, currIdx, index, valid);
       let idx = 0;
 
       const arrCurrWord = currWord.split("");
