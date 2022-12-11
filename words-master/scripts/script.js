@@ -16,8 +16,6 @@ const obj = {
 
   addLetter(event) {
     const letter = event.key;
-
-    if (!obj.secretWord.length) obj.getSekretWord();
     if (obj.isLetter(letter) && obj.currWord.length < WORD_SIZE) {
       obj.currWord += letter;
       letters[obj.index].innerText = letter;
@@ -64,18 +62,24 @@ const obj = {
       }, 500);
     } else {
       let idx = 0;
+      const chopSecretWord = obj.secretWord.split("");
       for (let i = obj.currIdx; i < currSize; i++) {
         const letterStyle = letters[i].style;
         const currLetter = obj.currWord[idx];
         const secretLetter = obj.secretWord[idx];
+        const chopIndex = chopSecretWord.indexOf(currLetter);
         letterStyle.transition = "";
         if (currLetter === secretLetter) {
           letterStyle.backgroundColor = "green";
-        } else if (obj.secretWord.indexOf(currLetter) !== -1) {
+        } else if (
+          obj.secretWord.indexOf(currLetter) !== -1 &&
+          chopIndex !== -1
+        ) {
           letterStyle.backgroundColor = "#ffff00";
         } else {
           letterStyle.backgroundColor = "#C0C0C0";
         }
+        chopSecretWord.splice(chopIndex, 1);
         idx++;
       }
       if (obj.currWord === obj.secretWord) console.log("You winner!!");
@@ -102,6 +106,8 @@ const obj = {
     }
   },
 };
-
+{
+  if (!obj.secretWord.length) obj.getSekretWord();
+}
 restartBtn.addEventListener("click", obj.restart);
 body.addEventListener("keydown", obj.addLetter);
