@@ -18,16 +18,15 @@ class GameMetods {
   }
 
   addLetter(event) {
-    const { currWord, index, currIdx, isLetter, isValidWord } = game;
+    const { currWord, index, currIdx, isLetter, isValidWord } = this;
     const letter = event.key;
     if (isLetter(letter) && currWord.length < WORD_SIZE) {
-      game.currWord += letter;
-      letters[game.index++].innerText = letter;
+      this.currWord += letter;
+      letters[this.index++].innerText = letter;
     }
     if (letter === "Backspace" && index > currIdx) {
-      letters[--game.index].innerText = "";
-      game.currWord = currWord.substring(0, currWord.length - 1);
-      
+      letters[--this.index].innerText = "";
+      this.currWord = currWord.substring(0, currWord.length - 1);
     }
     if (
       currWord.length === WORD_SIZE &&
@@ -36,23 +35,24 @@ class GameMetods {
     ) {
       isValidWord(currWord);
     }
-    game.valid = false;
+    this.valid = false;
   }
 
   async isValidWord(currWord) {
+    console.log(this);
     const promis = await fetch(WORDS_VALIDATOR_URL, {
       method: "POST",
       body: JSON.stringify({ word: currWord }),
     });
     const { validWord } = await promis.json();
-    game.valid = validWord;
-    game.paintingLetters();
+    this.valid = validWord;
+    this.paintingLetters();
   }
 
   async getSekretWord() {
     const promis = await fetch(WORDS_URL);
     const { word } = await promis.json();
-    game.secretWord = word;
+    this.secretWord = word;
   }
 
   paintingLetters() {
@@ -124,7 +124,7 @@ class GameMetods {
     return count;
   }
   restart() {
-    let { getSekretWord, currWord, index, currIdx, valid } = game;
+    let { getSekretWord, currWord, index, currIdx, valid } = this;
     getSekretWord();
     currWord = "";
     index = 0;
@@ -143,5 +143,5 @@ const game = new GameMetods();
   if (!game.secretWord.length) game.getSekretWord();
 }
 
-restartBtn.addEventListener("click", game.restart);
-body.addEventListener("keydown", game.addLetter);
+restartBtn.addEventListener("click", () => game.restart());
+body.addEventListener("keydown", (event) => game.addLetter(event));
