@@ -8,64 +8,67 @@ const WORDS_URL = "https://words.dev-apis.com/word-of-the-day?random=1";
 
 const WORD_SIZE = 5;
 
-const obj = {
-  currWord: "",
-  secretWord: "",
-  index: 0,
-  currIdx: 0,
-  valid: false,
+class GameMetods {
+  constructor() {
+    this.currWord = "";
+    this.secretWord = "";
+    this.index = 0;
+    this.currIdx = 0;
+    this.valid = false;
+  }
 
   addLetter(event) {
+    const { currWord, index, currIdx, isLetter, isValidWord } = game;
     const letter = event.key;
-    if (obj.isLetter(letter) && obj.currWord.length < WORD_SIZE) {
-      obj.currWord += letter;
-      letters[obj.index].innerText = letter;
-      obj.index++;
+    if (isLetter(letter) && currWord.length < WORD_SIZE) {
+      game.currWord += letter;
+      letters[game.index++].innerText = letter;
     }
-    if (letter === "Backspace" && obj.index > obj.currIdx) {
-      obj.index--;
-      letters[obj.index].innerText = "";
-      obj.currWord = obj.currWord.substring(0, obj.currWord.length - 1);
+    if (letter === "Backspace" && index > currIdx) {
+      letters[--game.index].innerText = "";
+      game.currWord = currWord.substring(0, currWord.length - 1);
+      
     }
-    if (obj.currWord.length === WORD_SIZE && letter === "Enter") {
-      obj.isValidWord(obj.currWord);
-      obj.valid = false;
+    if (
+      currWord.length === WORD_SIZE &&
+      letter === "Enter" &&
+      index - currIdx === WORD_SIZE
+    ) {
+      isValidWord(currWord);
     }
-  },
+    game.valid = false;
+  }
 
-  isValidWord: async function (currWord) {
+  async isValidWord(currWord) {
     const promis = await fetch(WORDS_VALIDATOR_URL, {
       method: "POST",
       body: JSON.stringify({ word: currWord }),
     });
-    const validObj = await promis.json();
-    this.valid = validObj.validWord;
-    this.paintingLetters();
-  },
+    const { validWord } = await promis.json();
+    game.valid = validWord;
+    game.paintingLetters();
+  }
 
-  getSekretWord: async function () {
+  async getSekretWord() {
     const promis = await fetch(WORDS_URL);
-    const wordObj = await promis.json();
-    this.secretWord = wordObj.word;
-    console.log(this.secretWord);
-  },
+    const { word } = await promis.json();
+    game.secretWord = word;
+  }
 
   paintingLetters() {
     const { secretWord, numOfLetter, index, valid, currWord, currIdx } = this;
-
     const currSize = currIdx + WORD_SIZE;
-
     if (!valid) {
       for (let i = currIdx; i < currSize; i++) {
         letters[i].style.borderColor = "#FF0000";
-        letters[i].style.transition = "0.5s";
+        letters[i].style.transition = "0.3s";
       }
       setTimeout(() => {
         for (let j = currIdx; j < currSize; j++) {
           letters[j].style.borderColor = "#333";
         }
-      }, 500);
-    } else {
+      }, 300);
+    } else if (currWord.length === WORD_SIZE) {
       let idx = 0;
 
       const arrCurrWord = currWord.split("");
@@ -74,7 +77,7 @@ const obj = {
       for (let i = currIdx; i < currSize; i++) {
         const letterStyle = letters[i].style;
         const currWordLetter = currWord[idx];
-        const secretWordLetter = secretWord[idx];
+        const secretWordLetter = secretWord[idx++];
 
         const numOfLetCurrWord = numOfLetter(arrCurrWord, currWordLetter);
         const numOfLetSecretWord = numOfLetter(arrSecretWord, currWordLetter);
@@ -99,20 +102,19 @@ const obj = {
         } else if (numOfLetSecretWord) {
           letterStyle.backgroundColor = "#ffff00";
         }
-        idx++;
       }
       if (currWord === secretWord) console.log("You winner!!");
       this.currWord = "";
       this.currIdx = index;
     }
-  },
+  }
 
   isLetter(letter) {
     if ((letter >= "a" && letter <= "z") || (letter >= "A" && letter <= "Z")) {
       if (letter.length === 1) return true;
     }
     return false;
-  },
+  }
 
   numOfLetter(word, letter) {
     let count = 0;
@@ -120,22 +122,26 @@ const obj = {
       if (ell === letter) count++;
     }
     return count;
-  },
-
+  }
   restart() {
-    obj.getSekretWord();
-    obj.currWord = "";
-    obj.index = 0;
-    obj.ocurrIdx = 0;
-    obj.valid = false;
+    let { getSekretWord, currWord, index, currIdx, valid } = game;
+    getSekretWord();
+    currWord = "";
+    index = 0;
+    currIdx = 0;
+    valid = false;
     for (const letter of letters) {
       letter.innerText = "";
       letter.style.backgroundColor = "";
     }
-  },
-};
-{
-  if (!obj.secretWord.length) obj.getSekretWord();
+  }
 }
-restartBtn.addEventListener("click", obj.restart);
-body.addEventListener("keydown", obj.addLetter);
+
+const game = new GameMetods();
+
+{
+  if (!game.secretWord.length) game.getSekretWord();
+}
+
+restartBtn.addEventListener("click", game.restart);
+body.addEventListener("keydown", game.addLetter);
