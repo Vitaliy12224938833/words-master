@@ -8,6 +8,24 @@ const WORDS_URL = "https://words.dev-apis.com/word-of-the-day?random=1";
 
 const WORD_SIZE = 5;
 
+async function isValidWord(currWord) {
+  console.log(this);
+  const promis = await fetch(WORDS_VALIDATOR_URL, {
+    method: "POST",
+    body: JSON.stringify({ word: currWord }),
+  });
+  const { validWord } = await promis.json();
+  game.valid = validWord;
+  game.painting();
+}
+
+async function getSekretWord() {
+  const promis = await fetch(WORDS_URL);
+  const { word } = await promis.json();
+  game.secretWord = word;
+  console.log(game.secretWord);
+}
+
 class GameMetods {
   constructor() {
     this.currWord = "";
@@ -18,7 +36,7 @@ class GameMetods {
   }
 
   addLetter(event) {
-    const { currWord, index, currIdx, isLetter, isValidWord } = this;
+    const { currWord, index, currIdx, isLetter } = this;
     const letter = event.key;
     if (isLetter(letter) && currWord.length < WORD_SIZE) {
       this.currWord += letter;
@@ -38,71 +56,21 @@ class GameMetods {
     this.valid = false;
   }
 
-  async isValidWord(currWord) {
-    console.log(this);
-    const promis = await fetch(WORDS_VALIDATOR_URL, {
-      method: "POST",
-      body: JSON.stringify({ word: currWord }),
-    });
-    const { validWord } = await promis.json();
-    this.valid = validWord;
-    this.paintingLetters();
-  }
-
-  async getSekretWord() {
-    const promis = await fetch(WORDS_URL);
-    const { word } = await promis.json();
-    this.secretWord = word;
-  }
-
-  paintingLetters() {
-    const { secretWord, numOfLetter, index, valid, currWord, currIdx } = this;
+  painting() {
+    const {
+      secretWord,
+      index,
+      valid,
+      currWord,
+      currIdx,
+      paintingBorder,
+      paintingLetter,
+    } = this;
     const currSize = currIdx + WORD_SIZE;
-    if (!valid) {
-      for (let i = currIdx; i < currSize; i++) {
-        letters[i].style.borderColor = "#FF0000";
-        letters[i].style.transition = "0.3s";
-      }
-      setTimeout(() => {
-        for (let j = currIdx; j < currSize; j++) {
-          letters[j].style.borderColor = "#333";
-        }
-      }, 300);
-    } else if (currWord.length === WORD_SIZE) {
-      let idx = 0;
+    if (!valid) paintingBorder(currIdx, currSize);
+    else if (currWord.length === WORD_SIZE) {
+      paintingLetter();
 
-      const arrCurrWord = currWord.split("");
-      const arrSecretWord = secretWord.split("");
-
-      for (let i = currIdx; i < currSize; i++) {
-        const letterStyle = letters[i].style;
-        const currWordLetter = currWord[idx];
-        const secretWordLetter = secretWord[idx++];
-
-        const numOfLetCurrWord = numOfLetter(arrCurrWord, currWordLetter);
-        const numOfLetSecretWord = numOfLetter(arrSecretWord, currWordLetter);
-
-        const chopIndex = arrCurrWord.indexOf(currWordLetter);
-
-        letterStyle.transition = "0.1s";
-
-        if (currWordLetter === secretWordLetter) {
-          letterStyle.backgroundColor = "green";
-          if (numOfLetCurrWord > numOfLetSecretWord) {
-            arrCurrWord.splice(chopIndex, 1);
-          }
-        } else if (
-          !numOfLetSecretWord ||
-          numOfLetCurrWord > numOfLetSecretWord
-        ) {
-          if (numOfLetCurrWord > numOfLetSecretWord) {
-            arrCurrWord.splice(chopIndex, 1);
-          }
-          letterStyle.backgroundColor = "#C0C0C0";
-        } else if (numOfLetSecretWord) {
-          letterStyle.backgroundColor = "#ffff00";
-        }
-      }
       if (currWord === secretWord) console.log("You winner!!");
       this.currWord = "";
       this.currIdx = index;
@@ -123,6 +91,56 @@ class GameMetods {
     }
     return count;
   }
+
+  paintingBorder(currIdx, currSize) {
+    for (let i = currIdx; i < currSize; i++) {
+      letters[i].style.borderColor = "#FF0000";
+      letters[i].style.transition = "0.3s";
+    }
+    setTimeout(() => {
+      for (let j = currIdx; j < currSize; j++) {
+        letters[j].style.borderColor = "#333";
+      }
+    }, 300);
+  }
+
+  paintingLetter() {
+    console.log(this);
+    const { secretWord, currWord, currIdx, numOfLetter } = game;
+
+    let idx = 0;
+    const currSize = currIdx + WORD_SIZE;
+    const arrCurrWord = currWord.split("");
+    const arrSecretWord = secretWord.split("");
+
+    for (let i = currIdx; i < currSize; i++) {
+      const letterStyle = letters[i].style;
+      const currWordLetter = currWord[idx];
+      const secretWordLetter = secretWord[idx++];
+
+      const numOfLetCurrWord = numOfLetter(arrCurrWord, currWordLetter);
+      const numOfLetSecretWord = numOfLetter(arrSecretWord, currWordLetter);
+
+      const chopIndex = arrCurrWord.indexOf(currWordLetter);
+
+      letterStyle.transition = "0.1s";
+
+      if (currWordLetter === secretWordLetter) {
+        letterStyle.backgroundColor = "green";
+        if (numOfLetCurrWord > numOfLetSecretWord) {
+          arrCurrWord.splice(chopIndex, 1);
+        }
+      } else if (!numOfLetSecretWord || numOfLetCurrWord > numOfLetSecretWord) {
+        if (numOfLetCurrWord > numOfLetSecretWord) {
+          arrCurrWord.splice(chopIndex, 1);
+        }
+        letterStyle.backgroundColor = "#C0C0C0";
+      } else if (numOfLetSecretWord) {
+        letterStyle.backgroundColor = "#ffff00";
+      }
+    }
+  }
+
   restart() {
     let { getSekretWord, currWord, index, currIdx, valid } = this;
     getSekretWord();
@@ -140,7 +158,7 @@ class GameMetods {
 const game = new GameMetods();
 
 {
-  if (!game.secretWord.length) game.getSekretWord();
+  if (!game.secretWord.length) getSekretWord();
 }
 
 restartBtn.addEventListener("click", () => game.restart());
