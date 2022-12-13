@@ -82,7 +82,7 @@ class WordsMaster {
 
       const chopIndex = arrCurrWord.indexOf(currWordLetter);
 
-      letterStyle.transition = "0.1s";
+      letterStyle.transition = "";
 
       if (currWordLetter === secretWordLetter) {
         letterStyle.backgroundColor = "green";
@@ -129,16 +129,16 @@ class WordsMaster {
     return count;
   }
 
-  restart() {
-    getSekretWord();
+  async restart() {
     this.currWord = "";
+    this.secretWord = await getSekretWord();
     this.index = 0;
     this.currIdx = 0;
-    this.valid = false;
     for (const letter of letters) {
       letter.innerText = "";
       letter.style.backgroundColor = "";
     }
+    console.log(this.secretWord);
     return;
   }
 }
@@ -148,6 +148,7 @@ const game = new WordsMaster();
 (async () => {
   if (!game.secretWord.length) {
     game.secretWord = await getSekretWord();
+    console.log(game.secretWord);
   }
   return;
 })();
