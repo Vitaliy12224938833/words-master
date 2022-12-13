@@ -54,18 +54,18 @@ class WordsMaster {
 
   painting(validWord) {
     const currSize = this.currIdx + WORD_SIZE;
-    if (!validWord) this.paintingBorder(this.currIdx, currSize);
+
+    if (!validWord) this.paintingBorder(currSize);
     else if (this.currWord.length === WORD_SIZE) {
-      this.paintingLetter();
+      this.paintingLetter(currSize);
       this.currWord = "";
       this.currIdx = this.index;
     }
     if (this.currWord === this.secretWord) console.log("You winner!!");
     return;
   }
-  paintingLetter() {
+  paintingLetter(currSize) {
     let idx = 0;
-    const currSize = this.currIdx + WORD_SIZE;
     const arrCurrWord = this.currWord.split("");
     const arrSecretWord = this.secretWord.split("");
 
@@ -73,15 +73,13 @@ class WordsMaster {
       const letterStyle = letters[i].style;
       const currWordLetter = this.currWord[idx];
       const secretWordLetter = this.secretWord[idx++];
-
+      const chopIndex = arrCurrWord.indexOf(currWordLetter);
       const numOfLetCurrWord = this.numOfLetter(arrCurrWord, currWordLetter);
       const numOfLetSecretWord = this.numOfLetter(
         arrSecretWord,
         currWordLetter
       );
-
-      const chopIndex = arrCurrWord.indexOf(currWordLetter);
-
+      console.log(numOfLetCurrWord);
       letterStyle.transition = "";
 
       if (currWordLetter === secretWordLetter) {
@@ -101,13 +99,13 @@ class WordsMaster {
     return;
   }
 
-  paintingBorder(currIdx, currSize) {
-    for (let i = currIdx; i < currSize; i++) {
+  paintingBorder(currSize) {
+    for (let i = this.currIdx; i < currSize; i++) {
       letters[i].style.borderColor = "#FF0000";
       letters[i].style.transition = "0.3s";
     }
     setTimeout(() => {
-      for (let j = currIdx; j < currSize; j++) {
+      for (let j = this.currIdx; j < currSize; j++) {
         letters[j].style.borderColor = "#333";
       }
     }, 300);
@@ -122,11 +120,10 @@ class WordsMaster {
   }
 
   numOfLetter(word, letter) {
-    let count = 0;
-    for (const ell of word) {
-      if (ell === letter) count++;
-    }
-    return count;
+    return word.reduce((acc, ell) => {
+      if (ell === letter) return acc + 1;
+      return acc;
+    }, 0);
   }
 
   async restart() {
