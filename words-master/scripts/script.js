@@ -8,14 +8,17 @@ const WORDS_URL = "https://words.dev-apis.com/word-of-the-day?random=1";
 
 const WORD_SIZE = 5;
 
+const generateKey = (args) => args.map((ell) => ell.toString()).join("|");
+
 function memoize(callback) {
   const cache = new Map();
-  return async (word) => {
-    const value = cache.get(word);
-    if (cache.has(word)) return value;
-    const res = await callback(word);
-    cache.set(word, res);
-    return res;
+  return (...args) => {
+    const key = generateKey(args);
+    const value = cache.get(key);
+    if (cache.has(key)) return value;
+    const result = callback(...args);
+    cache.set(key, result);
+    return result;
   };
 }
 
@@ -43,6 +46,8 @@ class WordsMaster {
   }
 
   isValid = memoize(isValidWord);
+
+  numOfLet = memoize(this.numLetInWord);
 
   async addLetter(event) {
     const letter = event.key;
@@ -80,18 +85,14 @@ class WordsMaster {
   paintingLetter(currSize) {
     let idx = 0;
     const arrCurrWord = this.currWord.split("");
-    const arrSecretWord = this.secretWord.split("");
 
     for (let i = this.currIdx; i < currSize; i++) {
       const letterStyle = letters[i].style;
       const currWordLetter = this.currWord[idx];
       const secretWordLetter = this.secretWord[idx++];
       const chopIndex = arrCurrWord.indexOf(currWordLetter);
-      const numOfLetCurrWord = this.numOfLetter(arrCurrWord, currWordLetter);
-      const numOfLetSecretWord = this.numOfLetter(
-        arrSecretWord,
-        currWordLetter
-      );
+      const numOfLetCurrWord = this.numOfLet(this.currWord, currWordLetter);
+      const numOfLetSecretWord = this.numOfLet(this.secretWord, currWordLetter);
       letterStyle.transition = "";
 
       if (currWordLetter === secretWordLetter) {
@@ -131,11 +132,12 @@ class WordsMaster {
     return false;
   }
 
-  numOfLetter(word, letter) {
-    return word.reduce((acc, ell) => {
-      if (ell === letter) return acc + 1;
-      return acc;
-    }, 0);
+  numLetInWord(word, letter) {
+    let count = 0;
+    for (let ell of word) {
+      if (ell === letter) count++;
+    }
+    return count;
   }
 
   async restart() {
