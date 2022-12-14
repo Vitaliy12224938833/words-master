@@ -8,6 +8,17 @@ const WORDS_URL = "https://words.dev-apis.com/word-of-the-day?random=1";
 
 const WORD_SIZE = 5;
 
+function memoize(callback) {
+  const cache = new Map();
+  return async (word) => {
+    const value = cache.get(word);
+    if (cache.has(word)) return value;
+    const res = await callback(word);
+    cache.set(word, res);
+    return res;
+  };
+}
+
 async function isValidWord(currWord) {
   const promis = await fetch(WORDS_VALIDATOR_URL, {
     method: "POST",
@@ -31,6 +42,8 @@ class WordsMaster {
     this.currIdx = 0;
   }
 
+  isValid = memoize(isValidWord);
+
   async addLetter(event) {
     const letter = event.key;
     if (this.isLetter(letter) && this.currWord.length < WORD_SIZE) {
@@ -46,7 +59,7 @@ class WordsMaster {
       letter === "Enter" &&
       this.index - this.currIdx === WORD_SIZE
     ) {
-      const validWord = await isValidWord(this.currWord);
+      const validWord = await this.isValid(this.currWord);
       this.painting(validWord);
     }
     return;
@@ -79,21 +92,17 @@ class WordsMaster {
         arrSecretWord,
         currWordLetter
       );
-      console.log(numOfLetCurrWord);
       letterStyle.transition = "";
 
       if (currWordLetter === secretWordLetter) {
         letterStyle.backgroundColor = "green";
-        if (numOfLetCurrWord > numOfLetSecretWord) {
-          arrCurrWord.splice(chopIndex, 1);
-        }
       } else if (!numOfLetSecretWord || numOfLetCurrWord > numOfLetSecretWord) {
-        if (numOfLetCurrWord > numOfLetSecretWord) {
-          arrCurrWord.splice(chopIndex, 1);
-        }
         letterStyle.backgroundColor = "#C0C0C0";
       } else if (numOfLetSecretWord) {
         letterStyle.backgroundColor = "#ffff00";
+      }
+      if (numOfLetCurrWord > numOfLetSecretWord) {
+        arrCurrWord.splice(chopIndex, 1);
       }
     }
     return;
@@ -113,8 +122,11 @@ class WordsMaster {
   }
 
   isLetter(letter) {
-    if ((letter >= "a" && letter <= "z") || (letter >= "A" && letter <= "Z")) {
-      if (letter.length === 1) return true;
+    if (
+      (letter >= "a" && letter <= "z") ||
+      (letter >= "A" && letter <= "Z" && letter.length === 1)
+    ) {
+      return true;
     }
     return false;
   }
