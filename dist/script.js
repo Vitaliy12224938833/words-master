@@ -4885,19 +4885,20 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _word_master__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./word-master */ "./src/word-master.js");
-/* harmony import */ var _API_get_secret_word__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./API/get-secret-word */ "./src/API/get-secret-word.js");
-/* harmony import */ var _modal_window_restart_btn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modal-window/restart-btn */ "./src/modal-window/restart-btn.js");
-/* harmony import */ var _styles_styles_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../styles/styles.css */ "./styles/styles.css");
+/* harmony import */ var _styles_styles_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../styles/styles.css */ "./styles/styles.css");
+/* harmony import */ var _word_master__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./word-master */ "./src/word-master.js");
+/* harmony import */ var _API_get_secret_word__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./API/get-secret-word */ "./src/API/get-secret-word.js");
+/* harmony import */ var _modal_window_restart_btn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modal-window/restart-btn */ "./src/modal-window/restart-btn.js");
+
 
 
 
 
 
 window.addEventListener("DOMContentLoaded", () => {
-  (0,_API_get_secret_word__WEBPACK_IMPORTED_MODULE_1__.generateSecretWord)();
-  _word_master__WEBPACK_IMPORTED_MODULE_0__.game.addLetter(".scoreboard-letter");
-  (0,_modal_window_restart_btn__WEBPACK_IMPORTED_MODULE_2__.restart)(".restart-btn");
+  (0,_API_get_secret_word__WEBPACK_IMPORTED_MODULE_2__.generateSecretWord)();
+  _word_master__WEBPACK_IMPORTED_MODULE_1__.game.addLetter(".scoreboard-letter");
+  (0,_modal_window_restart_btn__WEBPACK_IMPORTED_MODULE_3__.restart)(".restart-btn");
 });
 
 })();
